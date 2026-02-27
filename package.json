@@ -1,0 +1,22 @@
+{
+  "name": "pmp",
+  "version": "1.0.0",
+  "description": "a project management applications for beginners",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "udemy",
+    "course",
+    "backend",
+    "API",
+    "creation"
+  ],
+  "author": "Deebyanshu Jha",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "3.8.1"
+  }
+}
