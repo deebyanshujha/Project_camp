@@ -110,3 +110,4 @@ userSchema.methods.generateTemporaryToken = function () {
 };
 
 export const User = mongoose.model("User", userSchema);
+//(not "User", MongoDB automatically makes it lowercase + plural)
