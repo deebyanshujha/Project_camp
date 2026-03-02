@@ -14,13 +14,14 @@ const sendEmail = async (options) => {
   const emailHtml = mailGenerator.generate(options.mailgenContent);
   //connector of our backend to the email server
   const transporter = nodemailer.createTransport({
-    host: process.env.MAILTRAP_STMP_HOST,
-    port: process.env.MAILTRAP_STMP_PORT,
+    host: process.env.MAILTRAP_SMTP_HOST,
+    port: Number(process.env.MAILTRAP_SMTP_PORT),
     auth: {
-      user: process.env.MAILTRAP_STMP_USER,
-      pass: process.env.MAILTRAP_STMP_PASS,
+      user: process.env.MAILTRAP_SMTP_USER,
+      pass: process.env.MAILTRAP_SMTP_PASS,
     },
   });
+
 
   const mail = {
     from: "mail.taskmanager@gamil.com",
@@ -46,7 +47,7 @@ const emailVerificationMailgenContent = (username, verificationUrl) => {
       name: username,
       intro: "welcome to our App!  we're excited to have you on board.",
       action: {
-        instruction: "To verify your email please click on the button",
+        instructions: "To verify your email please click on the button",
         button: {
           color: "#1a8ec4",
           text: "verify your email",
@@ -65,7 +66,7 @@ const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
       name: username,
       intro: "We got a request to reset the password of your account",
       action: {
-        instruction:
+        instructions:
           "To reset the password of your account click on the button",
         button: {
           color: "#d83114",
