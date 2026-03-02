@@ -82,7 +82,7 @@ const login = asyncHandler(async (req, res) => {
     throw new ApiError(400, "username or email is required");
   }
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
   if (!user) {
     throw new ApiError(400, "user does not exist please signup!");
   }
@@ -99,28 +99,27 @@ const login = asyncHandler(async (req, res) => {
   const LoggedInUser = await User.findById(user._id).select(
     "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
   );
-  
+
   const options = {
     httpOnly: true,
-    secure: true
-  }
+    secure: true,
+  };
 
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
-        new ApiResponse(
-            200,
-            {
-                user: LoggedInUser,
-                accessToken,
-                refreshToken
-            },
-            "User loggedin successfully"
-        )
-    )
-   
+      new ApiResponse(
+        200,
+        {
+          user: LoggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "User loggedin successfully",
+      ),
+    );
 });
 
 export { registerUser, login };
