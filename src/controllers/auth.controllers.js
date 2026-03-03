@@ -2,8 +2,9 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
-import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
+import { emailVerificationMailgenContent, sendEmail, forgotPasswordMailgenContent } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -54,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+      `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unHashedToken}`,
     ),
   });
 
@@ -214,7 +215,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+      `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unHashedToken}`,
     ),
   });
 
@@ -277,7 +278,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
-  const { email } = res.body;
+  const { email } = req.body;
 
   const user = await User.findOne({ email });
 
@@ -348,7 +349,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   const user = await User.findById(req.user?._id);
-  const isPasswordValid = await isPasswordCorrect(oldPassword);
+  const isPasswordValid = await user.isPasswordCorrect(oldPassword);
   if (!isPasswordValid) {
     throw new ApiError(400, "Invalid old password");
   }
