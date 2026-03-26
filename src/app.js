@@ -26,13 +26,17 @@ app.use("/api/v1/healthCheck", healthCheckRouter);
 import authRouter from "./routes/auth.routes.js";
 app.use("/api/v1/auth", authRouter);
 
+import projectRouter from './routes/project.routes.js'
+app.use("api/v1/projects",projectRouter)
+
+app.get("/instagram", (req, res) => {
+  res.send("this is an instagram page");
+});
+
 app.get("/", (req, res) => {
   //handles the request
   res.send("Hello World!");
 });
 
-app.get("/instagram", (req, res) => {
-  res.send("this is an instagram page");
-});
 
 export default app;
