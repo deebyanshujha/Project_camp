@@ -63,7 +63,7 @@ const getTaskById = asyncHandler(async (req, res) => {
   const task = await Task.aggregate([
     {
       $match: {
-        _id: mongoose.Types.objectId(taskId),
+        _id: new mongoose.Types.objectId(taskId),
       },
     },
     {
@@ -74,10 +74,12 @@ const getTaskById = asyncHandler(async (req, res) => {
         as: "assignedTo",
         pipeline: [
           {
-            _id: 1,
-            username: 1,
-            fullName: 1,
-            avatar: 1,
+            $project: {
+              _id: 1,
+              username: 1,
+              fullName: 1,
+              avatar: 1,
+            },
           },
         ],
       },
