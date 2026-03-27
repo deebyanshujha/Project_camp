@@ -12,8 +12,8 @@ import {
 } from "../controllers/task.controllers.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
-  createProjectValidator,
-  addMembersToProjectValidator,
+  createTaskValidator,
+  createSubTaskValidator,
 } from "../validators/index.js";
 
 import {
@@ -26,41 +26,69 @@ const router = Router();
 router.use(verifyJWT); // all routes will use verifyJWT
 
 router
-  .route("/")
-  .get(getProjects)
-  .post(createProjectValidator(), validate, createProject);
+  .route("/:projectId")
+  .get(validateProjectPermission(AvailableUserRoles), getTask)
+  .post(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    createTaskValidator(),
+    validate,
+    createTask,
+  );
 
 router
-  .route("/:projectId")
-  .get(validateProjectPermission(AvailableUserRoles), getProjectById)
+  .route("/:projectId/t/:taskId")
+  .get(validateProjectPermission(AvailableUserRoles), getTaskById)
   .put(
     // update data(put)
     validateProjectPermission([
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
-    createProjectValidator(),
+    createTaskValidator(),
     validate,
-    updateProject,
+    updateTask,
   )
-  .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteProject);
+  .delete(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    deleteTask,
+  );
 
 router
-  .route("/:projectId/members")
-  .get(getProjectMembers)
+  .route("/:projectId/t/:taskId/subtasks")
+  .get(validateProjectPermission(AvailableUserRoles), getSubTask)
   .post(
     validateProjectPermission([
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
-    addMembersToProjectValidator(),
+    createSubTaskValidator(),
     validate,
-    addMembersToProject,
+    createSubTask,
   );
 
 router
-  .route("/:projectId/members/:userId")
-  .put(validateProjectPermission([UserRolesEnum.ADMIN]), updateMemberRole)
-  .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteMember);
+  .route("/:projectId/t/:taskId/subtasks/:subTaskId")
+  .put(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    createSubTaskValidator(),
+    validate,
+    updateSubTask,
+  )
+  .delete(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    deleteSubTask,
+  );
 
 export default router;

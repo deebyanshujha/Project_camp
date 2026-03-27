@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
-app.use(cookieParser())
+app.use(cookieParser());
 //cors config
 app.use(
   cors({
@@ -26,8 +26,11 @@ app.use("/api/v1/healthCheck", healthCheckRouter);
 import authRouter from "./routes/auth.routes.js";
 app.use("/api/v1/auth", authRouter);
 
-import projectRouter from './routes/project.routes.js'
-app.use("api/v1/projects",projectRouter)
+import projectRouter from "./routes/project.routes.js";
+app.use("api/v1/projects", projectRouter);
+
+import taskRouter from "./routes/task.routes.js";
+app.use("/api/v1/tasks", taskRouter);
 
 app.get("/instagram", (req, res) => {
   res.send("this is an instagram page");
@@ -37,6 +40,5 @@ app.get("/", (req, res) => {
   //handles the request
   res.send("Hello World!");
 });
-
 
 export default app;
