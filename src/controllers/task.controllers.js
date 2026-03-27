@@ -148,50 +148,126 @@ const updateTask = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     },
   );
 
-  if(!task){
-    throw new ApiError(404, "task not found")
+  if (!task) {
+    throw new ApiError(404, "task not found");
   }
 
-  return  res.status(200).json(
-    new ApiResponse(
-      200,
-      task,
-      "task updated successfully"
-    )
-  )
+  return res
+    .status(200)
+    .json(new ApiResponse(200, task, "task updated successfully"));
 });
 
 const deleteTask = asyncHandler(async (req, res) => {
-  const  {taskId} = req.params;
+  const { taskId } = req.params;
   const task = await Task.findById(taskId);
-  if(!task){
+  if (!task) {
     throw new ApiError(404, "Task not found");
   }
 
   await Task.findByIdAndDelete(taskId);
-  return res.status(200).json(
-    new ApiResponse(200,{},"task deleted successfully")
-  )
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "task deleted successfully"));
 });
 
 const createSubTask = asyncHandler(async (req, res) => {
-  //temp
+  const { title } = req.body;
+  const { taskId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    throw new ApiError(400, "Invalid task ID");
+  }
+
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  const subtask = await Subtask.create({
+    title,
+    task: taskId,
+    createdBy: req.user._id,
+  });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, subtask, "Subtask created successfully"));
 });
 
 const getSubTask = asyncHandler(async (req, res) => {
-  //temp
+  const { taskId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    throw new ApiError(400, "taskId invalid");
+  }
+  const task = await Task.findById(taskId);
+  if (!task) {
+    throw new ApiError(404, "task not found");
+  }
+  const subTasks = await Subtask.find({
+    task: new mongoose.Types.ObjectId(taskId),
+  }).populate("createdBy", "avatar username fullName");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, subTasks, "Subtask fetched successfully"));
 });
 
 const deleteSubTask = asyncHandler(async (req, res) => {
-  //temp
+  const { subTaskId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(subTaskId)) {
+    throw new ApiError(400, "request invalid");
+  }
+
+  const subTask = await Subtask.findById(subTaskId);
+  if (!subTask) {
+    throw new ApiError(404, "subTask not found");
+  }
+
+  const deletedSubTask = await Subtask.findByIdAndDelete(subTaskId);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Subtask deleted successfully"));
 });
 
 const updateSubTask = asyncHandler(async (req, res) => {
-  //temp
+  const { title, isCompleted } = req.body;
+  const { subTaskId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(subTaskId)) {
+    throw new ApiError(400, "request invalid");
+  }
+
+  const updateFields = {};
+
+  if (title !== undefined) updateFields.title = title;
+  if (isCompleted !== undefined) updateFields.isCompleted = isCompleted;
+
+  const subTask = await Subtask.findById(subTaskId);
+  if (!subTask) {
+    throw new ApiError(404, "subTask not found");
+  }
+
+  const updatedSubtask = await Subtask.findByIdAndUpdate(
+    subTaskId,
+    updateFields,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  if (!updatedSubtask) {
+    throw new ApiError(404, "Subtask not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedSubtask, "subtask updated successfully"));
 });
 
 export {
