@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { AvailableUserRoles } from "../utils/constants.js";
+import { AvailableUserRoles, AvailableTaskStatus } from "../utils/constants.js";
 
 const userRegisterValidator = () => {
   return [
@@ -67,13 +67,42 @@ const addMembersToProjectValidator = () => {
       .trim()
       .notEmpty()
       .withMessage("Email is required")
-      .isEmail().withMessage("Email is required"),
+      .isEmail()
+      .withMessage("Email is required"),
 
     body("role")
       .notEmpty()
       .withMessage("Role is required")
       .isIn(AvailableUserRoles)
       .withMessage("Role is invalid"),
+  ];
+};
+
+const createTaskValidator = () => {
+  return [
+    body("title").trim().notEmpty().withMessage("title required"),
+    body("description")
+      .optional()
+      .isString()
+      .withMessage("description must be string")
+      .trim(),
+    body("status")
+      .optional()
+      .isIn(AvailableTaskStatus)
+      .withMessage("Invalid status"),
+    body("assignedTo").optional().isMongoId().withMessage("Invalid User ID"),
+  ];
+};
+
+const createSubTaskValidator = () => {
+  return [
+    body("title").trim().notEmpty().withMessage("Title is required"),
+
+    body("isCompleted")
+      .optional()
+      .isBoolean()
+      .withMessage("Must be a boolean")
+      .toBoolean(),
   ];
 };
 export {
@@ -84,4 +113,6 @@ export {
   userResetForgotPasswordValidator,
   createProjectValidator,
   addMembersToProjectValidator,
+  createTaskValidator,
+  createSubTaskValidator,
 };
