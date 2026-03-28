@@ -105,6 +105,17 @@ const createSubTaskValidator = () => {
       .toBoolean(),
   ];
 };
+
+const createNoteValidator = () => {
+  return [
+    body("content")
+      .trim()
+      .notEmpty()
+      .withMessage("content not present")
+      .isString()
+      .withMessage("content must be a string"),
+  ];
+};
 export {
   userRegisterValidator,
   userLoginValidator,
@@ -115,4 +126,5 @@ export {
   addMembersToProjectValidator,
   createTaskValidator,
   createSubTaskValidator,
+  createNoteValidator,
 };

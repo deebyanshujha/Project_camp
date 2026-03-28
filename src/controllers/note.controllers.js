@@ -31,7 +31,7 @@ const getNotes = asyncHandler(async (req, res) => {
     );
 });
 
-const createNotes = asyncHandler(async (req, res) => {
+const createNote = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const { content } = req.body;
 
@@ -55,7 +55,7 @@ const createNotes = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, note, "note created successfully"));
 });
 
-const updateNotes = asyncHandler(async (req, res) => {
+const updateNote = asyncHandler(async (req, res) => {
   const { noteId } = req.params;
   const { content } = req.body;
   if (!mongoose.Types.ObjectId.isValid(noteId)) {
@@ -187,8 +187,8 @@ const deleteNote = asyncHandler(async (req, res) => {
 
 export {
     getNotes,
-    createNotes,
-    updateNotes,
+    createNote,
+    updateNote,
     getNoteById,
     deleteNote
 }
