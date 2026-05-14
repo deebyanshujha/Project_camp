@@ -21,6 +21,7 @@ import {
   validateProjectPermission,
 } from "../middlewares/auth.middlewares.js";
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
+import { upload } from "../middlewares/multer.middlewares.js";
 
 const router = Router();
 router.use(verifyJWT); // all routes will use verifyJWT
@@ -33,6 +34,7 @@ router
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
+    upload.array("attachments"),
     createTaskValidator(),
     validate,
     createTask,

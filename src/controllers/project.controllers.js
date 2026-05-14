@@ -74,11 +74,12 @@ const getProjectById = asyncHandler(async (req, res) => {
 });
 
 const createProject = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, githubRepo } = req.body;
 
   const project = await Project.create({
     name,
     description,
+    githubRepo,
     createdBy: new mongoose.Types.ObjectId(req.user._id),
   });
 
@@ -111,7 +112,7 @@ const deleteProject = asyncHandler(async (req, res) => {
 });
 
 const updateProject = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, githubRepo } = req.body;
   const { projectId } = req.params;
 
   const project = await Project.findByIdAndUpdate(
@@ -119,6 +120,7 @@ const updateProject = asyncHandler(async (req, res) => {
     {
       name,
       description,
+      githubRepo,
     },
     {
       new: true,

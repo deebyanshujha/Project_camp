@@ -65,10 +65,7 @@ const userResetForgotPasswordValidator = () => {
       .optional()
       .notEmpty()
       .withMessage("new password is required"),
-    body("password")
-      .optional()
-      .notEmpty()
-      .withMessage("password is required"),
+    body("password").optional().notEmpty().withMessage("password is required"),
   ];
 };
 
@@ -76,6 +73,7 @@ const createProjectValidator = () => {
   return [
     body("name").notEmpty().withMessage("Name is required"),
     body("description").optional(),
+    body("githubRepo").optional().isURL().withMessage("Must be a valid URL"),
   ];
 };
 
@@ -108,7 +106,10 @@ const createTaskValidator = () => {
       .optional()
       .isIn(AvailableTaskStatus)
       .withMessage("Invalid status"),
-    body("assignedTo").optional().isMongoId().withMessage("Invalid User ID"),
+    body("assignedTo")
+      .optional({ checkFalsy: true })
+      .isMongoId()
+      .withMessage("Invalid User ID"),
   ];
 };
 
@@ -126,7 +127,11 @@ const createSubTaskValidator = () => {
 
 const createNoteValidator = () => {
   return [
-    body("title").optional().trim().isString().withMessage("title must be a string"),
+    body("title")
+      .optional()
+      .trim()
+      .isString()
+      .withMessage("title must be a string"),
     body("content")
       .trim()
       .notEmpty()

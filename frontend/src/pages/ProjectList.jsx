@@ -42,7 +42,7 @@ export default function ProjectList() {
   };
 
   const { values, handleChange, handleSubmit, isSubmitting, resetForm } = useForm(
-    { name: '', description: '' },
+    { name: '', description: '', githubRepo: '' },
     async (formData) => {
       try {
         const response = await projectAPI.createProject(formData);
@@ -158,6 +158,13 @@ export default function ProjectList() {
             name="description"
             placeholder="What is this project about?"
             value={values.description}
+            onChange={handleChange}
+          />
+          <Input
+            label="GitHub Repository (Optional)"
+            name="githubRepo"
+            placeholder="https://github.com/username/repo"
+            value={values.githubRepo}
             onChange={handleChange}
           />
 

@@ -162,7 +162,7 @@ export default function ProjectDetail() {
     handleSubmit: handleEditProjectSubmit,
     isSubmitting: isEditingProject,
     setValues: setEditProjectValues,
-  } = useForm({ name: '', description: '' }, async (formData) => {
+  } = useForm({ name: '', description: '', githubRepo: '' }, async (formData) => {
     try {
       const response = await projectAPI.updateProject(projectId, formData);
       setCurrentProject(response.data.data);
@@ -178,6 +178,7 @@ export default function ProjectDetail() {
       setEditProjectValues({
         name: currentProject.name || '',
         description: currentProject.description || '',
+        githubRepo: currentProject.githubRepo || '',
       });
     }
   }, [currentProject, setEditProjectValues]);
@@ -246,6 +247,30 @@ export default function ProjectDetail() {
             <p className="text-gray-700 mt-2 font-semibold">
               {currentProject?.description || 'No description provided'}
             </p>
+            {currentProject?.githubRepo && (
+              <a
+                href={currentProject.githubRepo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 mt-4 text-sketch-primary hover:text-sketch-ink font-bold transition flex-wrap"
+              >
+                <div className="flex items-center gap-2 bg-[#D6ECFF] px-3 py-1.5 rounded-lg border-2 border-sketch-ink">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                  </svg>
+                  <span>GitHub Repository</span>
+                </div>
+              </a>
+            )}
           </div>
         </div>
 
@@ -638,6 +663,13 @@ export default function ProjectDetail() {
             value={editProjectValues.description}
             onChange={handleEditProjectChange}
             placeholder="Brief description"
+          />
+          <Input
+            label="GitHub Repository (Optional)"
+            name="githubRepo"
+            value={editProjectValues.githubRepo}
+            onChange={handleEditProjectChange}
+            placeholder="https://github.com/username/repo"
           />
 
           <div className="flex justify-end gap-3 pt-4">
