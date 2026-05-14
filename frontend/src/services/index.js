@@ -23,7 +23,12 @@ export { projectAPI, userAPI };
 export const taskAPI = {
   getProjectTasks: (projectId) => apiClient.get(`/tasks/${projectId}`),
   getTaskById: (projectId, taskId) => apiClient.get(`/tasks/${projectId}/t/${taskId}`),
-  createTask: (projectId, data) => apiClient.post(`/tasks/${projectId}`, data),
+  createTask: (projectId, data) =>
+    apiClient.post(`/tasks/${projectId}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
   updateTask: (projectId, taskId, data) => apiClient.put(`/tasks/${projectId}/t/${taskId}`, data),
   deleteTask: (projectId, taskId) => apiClient.delete(`/tasks/${projectId}/t/${taskId}`),
 

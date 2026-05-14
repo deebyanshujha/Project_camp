@@ -69,6 +69,11 @@ export default function ProjectDetail() {
     ...(canModify ? [{ id: 'invite', label: 'Invite Members', count: inviteUsers.length }] : []),
   ];
 
+  const [taskFiles, setTaskFiles] = useState([]);
+  const handleTaskFileChange = (e) => {
+    setTaskFiles(Array.from(e.target.files));
+  };
+
   const {
     values: taskValues,
     handleChange: handleTaskChange,
@@ -77,7 +82,15 @@ export default function ProjectDetail() {
     resetForm: resetTaskForm,
   } = useForm({ title: '', description: '', assignedTo: '' }, async (formData) => {
     try {
-      const response = await taskAPI.createTask(projectId, formData);
+      const data = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (formData[key]) data.append(key, formData[key]);
+      });
+      taskFiles.forEach((file) => {
+        data.append('attachments', file);
+      });
+
+      const response = await taskAPI.createTask(projectId, data);
       setTasks([...tasks, response.data.data]);
       toast.success('Task created successfully!');
       setIsCreateTaskModalOpen(false);
@@ -531,6 +544,16 @@ export default function ProjectDetail() {
             ]}
           />
 
+          <div>
+            <label className="block text-sm font-bold text-gray-900 mb-1">Attachments</label>
+            <input
+              type="file"
+              multiple
+              onChange={handleTaskFileChange}
+              className="w-full px-4 py-3 bg-white border-2 border-sketch-ink rounded-xl shadow-sketch focus:outline-none focus:ring-2 focus:ring-sketch-primary"
+            />
+          </div>
+
           <div className="flex gap-3 justify-end">
             <Button
               type="button"
@@ -538,6 +561,7 @@ export default function ProjectDetail() {
               onClick={() => {
                 setIsCreateTaskModalOpen(false);
                 resetTaskForm();
+                setTaskFiles([]);
               }}
             >
               Cancel
