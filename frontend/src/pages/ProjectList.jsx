@@ -1,31 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, ClipboardList, Plus, Search, Users } from "lucide-react";
-import { Button, Card, Input, Modal, Textarea } from "../components/ui";
-import { useProjectStore } from "../store";
-import { projectAPI } from "../services";
-import { useForm } from "../hooks";
-import { toast } from "react-toastify";
-
-const normalizeProject = (entry) => {
-  const project = entry?.project ? entry.project : entry;
-
-  return {
-    ...project,
-    role: entry?.role ?? project?.role,
-    members:
-      typeof project?.members === "number"
-        ? project.members
-        : Array.isArray(project?.members)
-          ? project.members.length
-          : 0,
-  };
-};
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, ClipboardList, Plus, Search, Users } from 'lucide-react';
+import { Button, Card, Input, Modal, Textarea } from '../components/ui';
+import { useProjectStore } from '../store';
+import { projectAPI } from '../services';
+import { useForm } from '../hooks';
+import { toast } from 'react-toastify';
 
 export default function ProjectList() {
   const { projects, setProjects } = useProjectStore();
   const [filteredProjects, setFilteredProjects] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,16 +19,12 @@ export default function ProjectList() {
   }, []);
 
   useEffect(() => {
-    const normalizedProjects = projects.map(normalizeProject).filter(Boolean);
     const query = searchTerm.toLowerCase();
-    const filtered = normalizedProjects.filter((project) => {
-      const name = project?.name || "";
-      const description = project?.description || "";
+    const filtered = projects.filter((project) => {
+      const name = project?.name || '';
+      const description = project?.description || '';
 
-      return (
-        name.toLowerCase().includes(query) ||
-        description.toLowerCase().includes(query)
-      );
+      return name.toLowerCase().includes(query) || description.toLowerCase().includes(query);
     });
     setFilteredProjects(filtered);
   }, [searchTerm, projects]);
@@ -52,28 +33,28 @@ export default function ProjectList() {
     try {
       setIsLoading(true);
       const response = await projectAPI.getAllProjects();
-      setProjects(response.data.data.map(normalizeProject));
+      setProjects(response.data.data);
     } catch (error) {
-      toast.error("Failed to load projects");
+      toast.error('Failed to load projects');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, resetForm } =
-    useForm({ name: "", description: "" }, async (formData) => {
+  const { values, handleChange, handleSubmit, isSubmitting, resetForm } = useForm(
+    { name: '', description: '' },
+    async (formData) => {
       try {
         const response = await projectAPI.createProject(formData);
-        setProjects([normalizeProject(response.data.data), ...projects]);
-        toast.success("Project created successfully!");
+        setProjects([response.data.data, ...projects]);
+        toast.success('Project created successfully!');
         setIsCreateModalOpen(false);
         resetForm();
       } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Failed to create project",
-        );
+        toast.error(error.response?.data?.message || 'Failed to create project');
       }
-    });
+    }
+  );
 
   return (
     <div className="space-y-8">
@@ -110,12 +91,10 @@ export default function ProjectList() {
         <Card className="text-center py-12 bg-white">
           <ClipboardList size={56} className="mx-auto mb-4 text-sketch-ink" />
           <p className="text-gray-700 font-semibold mb-4">
-            {searchTerm ? "No projects match your search" : "No projects yet"}
+            {searchTerm ? 'No projects match your search' : 'No projects yet'}
           </p>
           {!searchTerm && (
-            <Button onClick={() => setIsCreateModalOpen(true)}>
-              Create Your First Project
-            </Button>
+            <Button onClick={() => setIsCreateModalOpen(true)}>Create Your First Project</Button>
           )}
         </Card>
       ) : (
@@ -124,7 +103,7 @@ export default function ProjectList() {
             <Link key={project._id} to={`/projects/${project._id}`}>
               <Card
                 className={`cursor-pointer transition h-full bg-white ${
-                  index % 2 === 0 ? "rotate-[-0.25deg]" : "rotate-[0.25deg]"
+                  index % 2 === 0 ? 'rotate-[-0.25deg]' : 'rotate-[0.25deg]'
                 }`}
               >
                 <div className="mb-4">
@@ -132,7 +111,7 @@ export default function ProjectList() {
                     {project.name}
                   </h3>
                   <p className="text-gray-700 text-sm mt-3 line-clamp-3 min-h-12">
-                    {project.description || "No description provided"}
+                    {project.description || 'No description provided'}
                   </p>
                 </div>
 
@@ -144,7 +123,7 @@ export default function ProjectList() {
                     <span className="status-pill bg-[#DDFBEA] px-3 py-1">Active</span>
                   </div>
                   <div className="w-full h-3 bg-white border-2 border-sketch-ink rounded-full overflow-hidden">
-                    <div className="h-full bg-sketch-accent" style={{ width: "75%" }} />
+                    <div className="h-full bg-sketch-accent" style={{ width: '75%' }} />
                   </div>
                   <div className="flex justify-end">
                     <ArrowRight size={18} className="text-sketch-primary" />
