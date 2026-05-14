@@ -2,7 +2,11 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
-import { emailVerificationMailgenContent, sendEmail, forgotPasswordMailgenContent } from "../utils/mail.js";
+import {
+  emailVerificationMailgenContent,
+  sendEmail,
+  forgotPasswordMailgenContent,
+} from "../utils/mail.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
@@ -90,9 +94,9 @@ const login = asyncHandler(async (req, res) => {
     throw new ApiError(400, "username or email is required");
   }
 
-  const user = await User.findOne(
-    email ? { email } : { username },
-  ).select("+password");
+  const user = await User.findOne(email ? { email } : { username }).select(
+    "+password",
+  );
   if (!user) {
     throw new ApiError(400, "user does not exist please signup!");
   }
@@ -363,6 +367,35 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "password has been changed"));
 });
 
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { fullName } = req.body;
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (fullName) {
+    user.fullName = fullName;
+  }
+
+  if (req.file) {
+    user.avatar = req.file.path;
+  }
+
+  await user.save({ validateBeforeSave: false });
+
+  const updatedUser = await User.findById(user._id).select(
+    "-password -refreshToken",
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, "User profile updated successfully"),
+    );
+});
+
 export {
   registerUser,
   login,
@@ -375,4 +408,5 @@ export {
   forgotPasswordRequest,
   resetForgotPassword,
   changeCurrentPassword,
+  updateUserProfile,
 };

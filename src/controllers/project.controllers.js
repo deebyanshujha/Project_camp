@@ -44,27 +44,20 @@ const getProjects = asyncHandler(async (req, res) => {
     },
     {
       $project: {
-        project: {
-          _id: 1,
-          name: 1,
-          description: 1,
-          members: 1,
-          createdAt: 1,
-          createdBy: 1,
-        },
-        role: 1,
-        _id: 0,
+        _id: "$projects._id",
+        name: "$projects.name",
+        description: "$projects.description",
+        members: "$projects.members",
+        role: "$role",
+        createdAt: "$projects.createdAt",
+        createdBy: "$projects.createdBy",
       },
     },
   ]);
-  const projects = projectMemberships.map(({ project, role }) => ({
-    ...project,
-    role,
-  }));
 
   return res
     .status(200)
-    .json(new ApiResponse(200, projects, "Projects fetched"));
+    .json(new ApiResponse(200, projectMemberships, "Projects fetched"));
 });
 
 const getProjectById = asyncHandler(async (req, res) => {
@@ -174,7 +167,9 @@ const addMembersToProject = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, addedMember, "Project member added successfully"));
+    .json(
+      new ApiResponse(200, addedMember, "Project member added successfully"),
+    );
 });
 
 const getProjectMembers = asyncHandler(async (req, res) => {
@@ -243,7 +238,9 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, flattenedMembers, "Members fetched successfully"));
+    .json(
+      new ApiResponse(200, flattenedMembers, "Members fetched successfully"),
+    );
 });
 
 const updateMemberRole = asyncHandler(async (req, res) => {
@@ -276,7 +273,9 @@ const updateMemberRole = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedRole, "member role updated successfully"));
+    .json(
+      new ApiResponse(200, updatedRole, "member role updated successfully"),
+    );
 });
 
 const deleteMember = asyncHandler(async (req, res) => {
@@ -290,15 +289,11 @@ const deleteMember = asyncHandler(async (req, res) => {
   if (!member) {
     throw new ApiError(404, "Member not found");
   }
-  const updatedRole = await ProjectMember.findByIdAndDelete(
-    member._id
-  );
+  const updatedRole = await ProjectMember.findByIdAndDelete(member._id);
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, updatedRole, "member deleted successfully"),
-    );
+    .json(new ApiResponse(200, updatedRole, "member deleted successfully"));
 });
 
 export {
