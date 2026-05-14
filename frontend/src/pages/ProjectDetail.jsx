@@ -168,6 +168,27 @@ export default function ProjectDetail() {
       });
     }
   }, [currentProject, setEditProjectValues]);
+  const handleUpdateMemberRole = async (userId, newRole) => {
+    try {
+      await projectAPI.updateMemberRole(projectId, userId, { role: newRole });
+      setMembers((prev) => prev.map((m) => (m._id === userId ? { ...m, role: newRole } : m)));
+      toast.success('Role updated successfully!');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update role');
+    }
+  };
+
+  const handleRemoveMember = async (userId) => {
+    if (!window.confirm('Remove this member from the project?')) return;
+    try {
+      await projectAPI.removeMember(projectId, userId);
+      setMembers((prev) => prev.filter((m) => m._id !== userId));
+      toast.success('Member removed successfully!');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to remove member');
+    }
+  };
+
   const handleInviteMember = async (selectedUser) => {
     try {
       setInvitingUserId(selectedUser._id);
@@ -371,9 +392,35 @@ export default function ProjectDetail() {
                         <p className="text-sm text-gray-600 truncate">{member.email}</p>
                       </div>
                     </div>
-                    <span className="status-pill bg-[#DDFBEA] px-3 py-1 text-xs font-black capitalize">
-                      {member.role?.replace('_', ' ')}
-                    </span>
+
+                    <div className="flex items-center gap-2">
+                      {currentMember?.role === 'admin' && user?._id !== member._id ? (
+                        <>
+                          <div className="w-32">
+                            <Select
+                              value={member.role}
+                              onChange={(e) => handleUpdateMemberRole(member._id, e.target.value)}
+                              options={[
+                                { value: 'member', label: 'Member' },
+                                { value: 'project_admin', label: 'Project Admin' },
+                                { value: 'admin', label: 'Admin' },
+                              ]}
+                            />
+                          </div>
+                          <button
+                            onClick={() => handleRemoveMember(member._id)}
+                            className="p-2 bg-[#FFE0DC] rounded-xl text-red-700 sketch-btn ml-2"
+                            aria-label="Remove member"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      ) : (
+                        <span className="status-pill bg-[#DDFBEA] px-3 py-1 text-xs font-black capitalize">
+                          {member.role?.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </Card>
               ))}
