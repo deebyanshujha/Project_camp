@@ -1,25 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  CheckCircle,
-  FileText,
-  Plus,
-  Trash2,
-  UserPlus,
-  Users,
-} from "lucide-react";
-import { Button, Card, Input, Modal, Select, Textarea } from "../components/ui";
-import {
-  useAuthStore,
-  useNoteStore,
-  useProjectStore,
-  useTaskStore,
-} from "../store";
-import { authAPI, noteAPI, projectAPI, taskAPI } from "../services";
-import { useForm } from "../hooks";
-import { toast } from "react-toastify";
-import { formatDate } from "../utils/helpers";
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, CheckCircle, FileText, Plus, Trash2, UserPlus, Users } from 'lucide-react';
+import { Button, Card, Input, Modal, Select, Textarea } from '../components/ui';
+import { useAuthStore, useNoteStore, useProjectStore, useTaskStore } from '../store';
+import { authAPI, noteAPI, projectAPI, taskAPI } from '../services';
+import { useForm } from '../hooks';
+import { toast } from 'react-toastify';
+import { formatDate } from '../utils/helpers';
 
 export default function ProjectDetail() {
   const { projectId } = useParams();
@@ -30,13 +17,14 @@ export default function ProjectDetail() {
   const { notes, setNotes } = useNoteStore();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("tasks");
+  const [activeTab, setActiveTab] = useState('tasks');
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
+  const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
   const [isCreateNoteModalOpen, setIsCreateNoteModalOpen] = useState(false);
   const [members, setMembers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
-  const [inviteRole, setInviteRole] = useState("member");
-  const [invitingUserId, setInvitingUserId] = useState("");
+  const [inviteRole, setInviteRole] = useState('member');
+  const [invitingUserId, setInvitingUserId] = useState('');
 
   useEffect(() => {
     fetchProjectData();
@@ -45,14 +33,13 @@ export default function ProjectDetail() {
   const fetchProjectData = async () => {
     try {
       setIsLoading(true);
-      const [projectRes, tasksRes, notesRes, membersRes, usersRes] =
-        await Promise.all([
-          projectAPI.getProjectById(projectId),
-          taskAPI.getProjectTasks(projectId),
-          noteAPI.getProjectNotes(projectId),
-          projectAPI.getProjectMembers(projectId),
-          authAPI.getUsers(),
-        ]);
+      const [projectRes, tasksRes, notesRes, membersRes, usersRes] = await Promise.all([
+        projectAPI.getProjectById(projectId),
+        taskAPI.getProjectTasks(projectId),
+        noteAPI.getProjectNotes(projectId),
+        projectAPI.getProjectMembers(projectId),
+        authAPI.getUsers(),
+      ]);
 
       setCurrentProject(projectRes.data.data);
       setTasks(tasksRes.data.data);
@@ -60,16 +47,15 @@ export default function ProjectDetail() {
       setMembers(membersRes.data.data);
       setAllUsers(usersRes.data.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load project details");
-      navigate("/projects");
+      toast.error(error.response?.data?.message || 'Failed to load project details');
+      navigate('/projects');
     } finally {
       setIsLoading(false);
     }
   };
 
   const currentMember = members.find((member) => member._id === user?._id);
-  const canModify =
-    currentMember?.role === "admin" || currentMember?.role === "project_admin";
+  const canModify = currentMember?.role === 'admin' || currentMember?.role === 'project_admin';
 
   const inviteUsers = useMemo(() => {
     const memberIds = new Set(members.map((member) => String(member._id)));
@@ -77,12 +63,10 @@ export default function ProjectDetail() {
   }, [allUsers, members]);
 
   const tabs = [
-    { id: "tasks", label: "Tasks", count: tasks.length },
-    { id: "notes", label: "Notes", count: notes.length },
-    { id: "members", label: "Members", count: members.length },
-    ...(canModify
-      ? [{ id: "invite", label: "Invite Members", count: inviteUsers.length }]
-      : []),
+    { id: 'tasks', label: 'Tasks', count: tasks.length },
+    { id: 'notes', label: 'Notes', count: notes.length },
+    { id: 'members', label: 'Members', count: members.length },
+    ...(canModify ? [{ id: 'invite', label: 'Invite Members', count: inviteUsers.length }] : []),
   ];
 
   const {
@@ -91,15 +75,15 @@ export default function ProjectDetail() {
     handleSubmit: handleCreateTask,
     isSubmitting: isCreatingTask,
     resetForm: resetTaskForm,
-  } = useForm({ title: "", description: "", assignedTo: "" }, async (formData) => {
+  } = useForm({ title: '', description: '', assignedTo: '' }, async (formData) => {
     try {
       const response = await taskAPI.createTask(projectId, formData);
       setTasks([...tasks, response.data.data]);
-      toast.success("Task created successfully!");
+      toast.success('Task created successfully!');
       setIsCreateTaskModalOpen(false);
       resetTaskForm();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create task");
+      toast.error(error.response?.data?.message || 'Failed to create task');
     }
   });
 
@@ -109,42 +93,81 @@ export default function ProjectDetail() {
     handleSubmit: handleCreateNote,
     isSubmitting: isCreatingNote,
     resetForm: resetNoteForm,
-  } = useForm({ title: "", content: "" }, async (formData) => {
+  } = useForm({ title: '', content: '' }, async (formData) => {
     try {
       const response = await noteAPI.createNote(projectId, formData);
       setNotes([...notes, response.data.data]);
-      toast.success("Note created successfully!");
+      toast.success('Note created successfully!');
       setIsCreateNoteModalOpen(false);
       resetNoteForm();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create note");
+      toast.error(error.response?.data?.message || 'Failed to create note');
     }
   });
 
   const handleDeleteTask = async (taskId) => {
-    if (!window.confirm("Delete this task?")) return;
+    if (!window.confirm('Delete this task?')) return;
 
     try {
       await taskAPI.deleteTask(projectId, taskId);
       setTasks(tasks.filter((task) => task._id !== taskId));
-      toast.success("Task deleted successfully!");
+      toast.success('Task deleted successfully!');
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete task");
+      toast.error(error.response?.data?.message || 'Failed to delete task');
     }
   };
 
   const handleDeleteNote = async (noteId) => {
-    if (!window.confirm("Delete this note?")) return;
+    if (!window.confirm('Delete this note?')) return;
 
     try {
       await noteAPI.deleteNote(projectId, noteId);
       setNotes(notes.filter((note) => note._id !== noteId));
-      toast.success("Note deleted successfully!");
+      toast.success('Note deleted successfully!');
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete note");
+      toast.error(error.response?.data?.message || 'Failed to delete note');
+    }
+  };
+  const handleDeleteProject = async () => {
+    if (
+      !window.confirm('Are you sure you want to delete this project? This action cannot be undone.')
+    )
+      return;
+
+    try {
+      await projectAPI.deleteProject(projectId);
+      toast.success('Project deleted successfully!');
+      navigate('/projects');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete project');
     }
   };
 
+  const {
+    values: editProjectValues,
+    handleChange: handleEditProjectChange,
+    handleSubmit: handleEditProjectSubmit,
+    isSubmitting: isEditingProject,
+    setValues: setEditProjectValues,
+  } = useForm({ name: '', description: '' }, async (formData) => {
+    try {
+      const response = await projectAPI.updateProject(projectId, formData);
+      setCurrentProject(response.data.data);
+      toast.success('Project updated successfully!');
+      setIsEditProjectModalOpen(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update project');
+    }
+  });
+
+  useEffect(() => {
+    if (currentProject) {
+      setEditProjectValues({
+        name: currentProject.name || '',
+        description: currentProject.description || '',
+      });
+    }
+  }, [currentProject, setEditProjectValues]);
   const handleInviteMember = async (selectedUser) => {
     try {
       setInvitingUserId(selectedUser._id);
@@ -155,9 +178,9 @@ export default function ProjectDetail() {
       setMembers((currentMembers) => [...currentMembers, response.data.data]);
       toast.success(`${selectedUser.username} added to the project`);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to add member");
+      toast.error(error.response?.data?.message || 'Failed to add member');
     } finally {
-      setInvitingUserId("");
+      setInvitingUserId('');
     }
   };
 
@@ -172,23 +195,36 @@ export default function ProjectDetail() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start gap-4 bg-white border-4 border-sketch-ink rounded-[24px_18px_26px_16px] p-6 shadow-sketch-lg">
-        <button
-          onClick={() => navigate("/projects")}
-          className="p-2 bg-white rounded-xl sketch-btn"
-          aria-label="Back to projects"
-        >
-          <ArrowLeft size={22} />
-        </button>
-        <div>
-          <p className="font-doodle text-2xl text-sketch-primary">Project board</p>
-          <h1 className="text-4xl md:text-5xl font-black text-sketch-ink">
-            {currentProject?.name}
-          </h1>
-          <p className="text-gray-700 mt-2 font-semibold">
-            {currentProject?.description || "No description provided"}
-          </p>
+      <div className="flex items-start justify-between bg-white border-4 border-sketch-ink rounded-[24px_18px_26px_16px] p-6 shadow-sketch-lg">
+        <div className="flex items-start gap-4">
+          <button
+            onClick={() => navigate('/projects')}
+            className="p-2 bg-white rounded-xl sketch-btn"
+            aria-label="Back to projects"
+          >
+            <ArrowLeft size={22} />
+          </button>
+          <div>
+            <p className="font-doodle text-2xl text-sketch-primary">Project board</p>
+            <h1 className="text-4xl md:text-5xl font-black text-sketch-ink">
+              {currentProject?.name}
+            </h1>
+            <p className="text-gray-700 mt-2 font-semibold">
+              {currentProject?.description || 'No description provided'}
+            </p>
+          </div>
         </div>
+
+        {currentMember?.role === 'admin' && (
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsEditProjectModalOpen(true)}>
+              Edit
+            </Button>
+            <Button variant="danger" onClick={handleDeleteProject}>
+              Delete
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 overflow-x-auto pb-2">
@@ -198,8 +234,8 @@ export default function ProjectDetail() {
             onClick={() => setActiveTab(tab.id)}
             className={`px-5 py-3 whitespace-nowrap rounded-xl border-2 border-sketch-ink font-black transition ${
               activeTab === tab.id
-                ? "bg-sketch-accent text-sketch-ink shadow-sketch-hover"
-                : "bg-white text-gray-700 hover:bg-[#D6ECFF]"
+                ? 'bg-sketch-accent text-sketch-ink shadow-sketch-hover'
+                : 'bg-white text-gray-700 hover:bg-[#D6ECFF]'
             }`}
           >
             {tab.label} ({tab.count})
@@ -207,7 +243,7 @@ export default function ProjectDetail() {
         ))}
       </div>
 
-      {activeTab === "tasks" && (
+      {activeTab === 'tasks' && (
         <div className="space-y-6">
           {canModify && (
             <Button onClick={() => setIsCreateTaskModalOpen(true)}>
@@ -222,9 +258,7 @@ export default function ProjectDetail() {
                 No tasks yet. Start by creating one!
               </p>
               {canModify && (
-                <Button onClick={() => setIsCreateTaskModalOpen(true)}>
-                  Create Task
-                </Button>
+                <Button onClick={() => setIsCreateTaskModalOpen(true)}>Create Task</Button>
               )}
             </Card>
           ) : (
@@ -244,7 +278,7 @@ export default function ProjectDetail() {
                         <p className="text-gray-700 mt-2">{task.description}</p>
                         <div className="flex flex-wrap gap-3 mt-4">
                           <span className="status-pill bg-[#D6ECFF] px-3 py-1 text-xs font-black">
-                            {task.status?.replace("_", " ").toUpperCase()}
+                            {task.status?.replace('_', ' ').toUpperCase()}
                           </span>
                           {task.assignedTo && (
                             <span className="text-xs text-gray-600 font-bold">
@@ -274,7 +308,7 @@ export default function ProjectDetail() {
         </div>
       )}
 
-      {activeTab === "notes" && (
+      {activeTab === 'notes' && (
         <div className="space-y-6">
           {canModify && (
             <Button onClick={() => setIsCreateNoteModalOpen(true)}>
@@ -295,7 +329,7 @@ export default function ProjectDetail() {
                 <Card key={note._id} className="bg-white">
                   <div className="flex justify-between items-start mb-4 gap-3">
                     <h3 className="text-2xl font-doodle font-bold text-sketch-ink flex-1">
-                      {note.title || "Untitled note"}
+                      {note.title || 'Untitled note'}
                     </h3>
                     {canModify && (
                       <button
@@ -308,9 +342,7 @@ export default function ProjectDetail() {
                     )}
                   </div>
                   <p className="text-gray-700 line-clamp-4">{note.content}</p>
-                  <p className="text-xs text-gray-500 mt-4">
-                    {formatDate(note.createdAt)}
-                  </p>
+                  <p className="text-xs text-gray-500 mt-4">{formatDate(note.createdAt)}</p>
                 </Card>
               ))}
             </div>
@@ -318,7 +350,7 @@ export default function ProjectDetail() {
         </div>
       )}
 
-      {activeTab === "members" && (
+      {activeTab === 'members' && (
         <div className="space-y-6">
           {members.length === 0 ? (
             <Card className="text-center py-12 bg-white">
@@ -335,14 +367,12 @@ export default function ProjectDetail() {
                         {member.username?.[0]?.toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-black text-sketch-ink truncate">
-                          {member.username}
-                        </p>
+                        <p className="font-black text-sketch-ink truncate">{member.username}</p>
                         <p className="text-sm text-gray-600 truncate">{member.email}</p>
                       </div>
                     </div>
                     <span className="status-pill bg-[#DDFBEA] px-3 py-1 text-xs font-black capitalize">
-                      {member.role?.replace("_", " ")}
+                      {member.role?.replace('_', ' ')}
                     </span>
                   </div>
                 </Card>
@@ -352,7 +382,7 @@ export default function ProjectDetail() {
         </div>
       )}
 
-      {activeTab === "invite" && canModify && (
+      {activeTab === 'invite' && canModify && (
         <div className="space-y-6">
           <Card className="bg-[#D6ECFF]">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -370,8 +400,8 @@ export default function ProjectDetail() {
                   value={inviteRole}
                   onChange={(event) => setInviteRole(event.target.value)}
                   options={[
-                    { value: "member", label: "Member" },
-                    { value: "project_admin", label: "Project Admin" },
+                    { value: 'member', label: 'Member' },
+                    { value: 'project_admin', label: 'Project Admin' },
                   ]}
                 />
               </div>
@@ -395,12 +425,8 @@ export default function ProjectDetail() {
                         {candidate.username?.[0]?.toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-black text-sketch-ink truncate">
-                          {candidate.username}
-                        </p>
-                        <p className="text-sm text-gray-600 truncate">
-                          {candidate.email}
-                        </p>
+                        <p className="font-black text-sketch-ink truncate">{candidate.username}</p>
+                        <p className="text-sm text-gray-600 truncate">{candidate.email}</p>
                       </div>
                     </div>
                     <Button
@@ -450,7 +476,7 @@ export default function ProjectDetail() {
             value={taskValues.assignedTo}
             onChange={handleTaskChange}
             options={[
-              { value: "", label: "Nobody" },
+              { value: '', label: 'Nobody' },
               ...members.map((member) => ({
                 value: member._id,
                 label: member.username,
@@ -520,7 +546,43 @@ export default function ProjectDetail() {
           </div>
         </form>
       </Modal>
+
+      <Modal
+        isOpen={isEditProjectModalOpen}
+        onClose={() => setIsEditProjectModalOpen(false)}
+        title="Edit Project"
+      >
+        <form onSubmit={handleEditProjectSubmit} className="space-y-4">
+          <Input
+            label="Project Name"
+            name="name"
+            value={editProjectValues.name}
+            onChange={handleEditProjectChange}
+            placeholder="Enter project name"
+            required
+          />
+          <Textarea
+            label="Description"
+            name="description"
+            value={editProjectValues.description}
+            onChange={handleEditProjectChange}
+            placeholder="Brief description"
+          />
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsEditProjectModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={isEditingProject}>
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
-
