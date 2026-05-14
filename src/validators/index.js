@@ -19,7 +19,12 @@ const userRegisterValidator = () => {
       .isLength({ min: 3 })
       .withMessage("username must be atleast 3 characters long"),
 
-    body("password").trim().isEmpty().withMessage("Password is required"),
+    body("password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
     body("fullName").optional().trim(),
   ];
 };
@@ -50,7 +55,20 @@ const userForgotPasswordValidator = () => {
 
 const userResetForgotPasswordValidator = () => {
   return [
-    body("newPassword").notEmpty().withMessage("new password is required"),
+    body().custom((_, { req }) => {
+      if (!req.body.newPassword && !req.body.password) {
+        throw new Error("password is required");
+      }
+      return true;
+    }),
+    body("newPassword")
+      .optional()
+      .notEmpty()
+      .withMessage("new password is required"),
+    body("password")
+      .optional()
+      .notEmpty()
+      .withMessage("password is required"),
   ];
 };
 
@@ -96,7 +114,7 @@ const createTaskValidator = () => {
 
 const createSubTaskValidator = () => {
   return [
-    body("title").trim().notEmpty().withMessage("Title is required"),
+    body("title").optional().trim().notEmpty().withMessage("Title is required"),
 
     body("isCompleted")
       .optional()
@@ -108,6 +126,7 @@ const createSubTaskValidator = () => {
 
 const createNoteValidator = () => {
   return [
+    body("title").optional().trim().isString().withMessage("title must be a string"),
     body("content")
       .trim()
       .notEmpty()

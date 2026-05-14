@@ -4,6 +4,7 @@ import {
   login,
   userLogOut,
   getCurrentUser,
+  getUsers,
   verifyEmail,
   resendEmailVerification,
   refreshAccessToken,
@@ -40,7 +41,8 @@ router
 
 //secure routes
 router.route("/logout").post(verifyJWT, userLogOut);
-router.route("/current-user").post(verifyJWT, getCurrentUser);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
+router.route("/users").get(verifyJWT, getUsers);
 router
   .route("/change-password")
   .post(

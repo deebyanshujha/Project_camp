@@ -1,0 +1,260 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Patrick+Hand&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background:
+    radial-gradient(circle at 16px 16px, rgba(31, 41, 55, 0.06) 1.2px, transparent 1.3px),
+    linear-gradient(135deg, #fff7d6 0%, #f7fbff 45%, #fef2f2 100%);
+  background-size: 28px 28px, auto;
+  color: #202020;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: #ffe66d;
+  color: #202020;
+}
+
+.paper-bg {
+  background:
+    linear-gradient(rgba(32, 32, 32, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(32, 32, 32, 0.035) 1px, transparent 1px),
+    #fffdf4;
+  background-size: 26px 26px;
+}
+
+.auth-stage {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 22%, rgba(255, 230, 109, 0.72) 0 90px, transparent 92px),
+    radial-gradient(circle at 82% 14%, rgba(94, 211, 243, 0.45) 0 120px, transparent 122px),
+    radial-gradient(circle at 78% 82%, rgba(255, 138, 128, 0.38) 0 130px, transparent 132px),
+    linear-gradient(135deg, #fff7d6 0%, #f7fbff 50%, #fef2f2 100%);
+}
+
+.auth-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, rgba(32, 32, 32, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(32, 32, 32, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent 85%);
+}
+
+.doodle-orbit {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border: 3px dashed rgba(32, 32, 32, 0.32);
+  border-radius: 42% 58% 47% 53% / 52% 43% 57% 48%;
+  transform: rotate(-12deg);
+  opacity: 0.65;
+}
+
+.doodle-star {
+  position: absolute;
+  width: 74px;
+  height: 74px;
+  background: #ffe66d;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 80% 94%, 50% 72%, 20% 94%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(4px 5px 0 rgba(32, 32, 32, 0.18));
+  opacity: 0.9;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid #202020;
+  border-radius: 53% 47% 50% 50% / 44% 58% 42% 56%;
+  background: #ffe66d;
+  box-shadow: 4px 4px 0 #202020;
+  color: #202020;
+}
+
+.font-doodle {
+  font-family: "Patrick Hand", "Comic Sans MS", cursive;
+  letter-spacing: 0;
+}
+
+/* Sketchy Design Elements */
+.sketch-border {
+  border: 3px solid #202020;
+  border-radius: 55% 45% 48% 52% / 46% 56% 44% 54%;
+}
+
+.sketch-btn {
+  position: relative;
+  font-weight: 800;
+  letter-spacing: 0;
+  transition: all 0.2s ease;
+  transform-origin: center;
+  box-shadow: 4px 4px 0 #202020;
+}
+
+.sketch-btn:hover {
+  transform: translate(-2px, -2px) rotate(-0.5deg);
+  box-shadow: 7px 7px 0 #202020;
+}
+
+.sketch-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #202020;
+}
+
+.sketch-card {
+  position: relative;
+  background: #fffdf4;
+  border: 3px solid #202020;
+  border-radius: 18px 14px 20px 13px;
+  box-shadow: 7px 7px 0 #202020;
+  transition: all 0.3s ease;
+}
+
+.sketch-card:hover {
+  box-shadow: 10px 10px 0 #202020;
+  transform: translate(-2px, -2px);
+}
+
+.sketch-input {
+  background: #ffffff;
+  border: 3px solid #202020;
+  border-radius: 14px 11px 16px 12px;
+  padding: 11px 14px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: "Inter", sans-serif;
+  box-shadow: 3px 3px 0 rgba(32, 32, 32, 0.18);
+}
+
+.sketch-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(94, 211, 243, 0.35), 3px 3px 0 rgba(32, 32, 32, 0.18);
+}
+
+.sketch-input:hover {
+  transform: translate(-1px, -1px);
+}
+
+.scribble-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.scribble-underline::after {
+  content: "";
+  position: absolute;
+  left: -0.08em;
+  right: -0.08em;
+  bottom: 0.03em;
+  height: 0.34em;
+  background: #ffe66d;
+  border: 2px solid rgba(32, 32, 32, 0.16);
+  border-radius: 48% 52% 44% 56%;
+  z-index: -1;
+  transform: rotate(-1deg);
+}
+
+.tape {
+  position: relative;
+}
+
+.tape::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 92px;
+  height: 26px;
+  background: rgba(255, 230, 109, 0.74);
+  border: 2px solid rgba(32, 32, 32, 0.18);
+  transform: translateX(-50%) rotate(-3deg);
+  border-radius: 4px;
+}
+
+.status-pill {
+  border: 2px solid #202020;
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 #202020;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

@@ -9,10 +9,19 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+const allowedOrigins = process.env.CORS_ORIGIN?.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 //cors config
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins?.includes("*") || allowedOrigins?.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true, //cookies, login info
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -22,12 +31,13 @@ app.use(
 //import all routes
 import healthCheckRouter from "./routes/healthcheck.routes.js";
 app.use("/api/v1/healthCheck", healthCheckRouter);
+app.use("/api/v1/healthcheck", healthCheckRouter);
 
 import authRouter from "./routes/auth.routes.js";
 app.use("/api/v1/auth", authRouter);
 
 import projectRouter from "./routes/project.routes.js";
-app.use("api/v1/projects", projectRouter);
+app.use("/api/v1/projects", projectRouter);
 
 import taskRouter from "./routes/task.routes.js";
 app.use("/api/v1/tasks", taskRouter);
@@ -42,6 +52,18 @@ app.get("/instagram", (req, res) => {
 app.get("/", (req, res) => {
   //handles the request
   res.send("Hello World!");
+});
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+
+  return res.status(statusCode).json({
+    statusCode,
+    data: err.data || null,
+    message: err.message || "Internal server error",
+    success: false,
+    errors: err.errors || [],
+  });
 });
 
 export default app;

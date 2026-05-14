@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 
 const getProjects = asyncHandler(async (req, res) => {
-  const projects = await ProjectMember.aggregate([
+  const projectMemberships = await ProjectMember.aggregate([
     {
       $match: {
         user: new mongoose.Types.ObjectId(req.user._id),
@@ -57,6 +57,11 @@ const getProjects = asyncHandler(async (req, res) => {
       },
     },
   ]);
+  const projects = projectMemberships.map(({ project, role }) => ({
+    ...project,
+    role,
+  }));
+
   return res
     .status(200)
     .json(new ApiResponse(200, projects, "Projects fetched"));
@@ -139,7 +144,7 @@ const addMembersToProject = asyncHandler(async (req, res) => {
     throw new ApiError(404, "user not found");
   }
 
-  await ProjectMember.findByIdAndUpdate(
+  const member = await ProjectMember.findOneAndUpdate(
     {
       user: new mongoose.Types.ObjectId(user._id),
       project: new mongoose.Types.ObjectId(projectId),
@@ -155,9 +160,21 @@ const addMembersToProject = asyncHandler(async (req, res) => {
     },
   );
 
+  const addedMember = {
+    _id: user._id,
+    username: user.username,
+    fullName: user.fullName,
+    email: user.email,
+    avatar: user.avatar,
+    role: member.role,
+    project: member.project,
+    createdAt: member.createdAt,
+    updatedAt: member.updatedAt,
+  };
+
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Project member added successfully"));
+    .json(new ApiResponse(200, addedMember, "Project member added successfully"));
 });
 
 const getProjectMembers = asyncHandler(async (req, res) => {
@@ -186,6 +203,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
               _id: 1,
               username: 1,
               fullName: 1,
+              email: 1,
               avatar: 1,
             },
           },
@@ -211,9 +229,21 @@ const getProjectMembers = asyncHandler(async (req, res) => {
     },
   ]);
 
+  const flattenedMembers = members.map((member) => ({
+    _id: member.user?._id,
+    username: member.user?.username,
+    fullName: member.user?.fullName,
+    email: member.user?.email,
+    avatar: member.user?.avatar,
+    role: member.role,
+    project: member.project,
+    createdAt: member.createdAt,
+    updatedAt: member.updatedAt,
+  }));
+
   return res
     .status(200)
-    .json(new ApiResponse(200, members, "Members fetched successfully"));
+    .json(new ApiResponse(200, flattenedMembers, "Members fetched successfully"));
 });
 
 const updateMemberRole = asyncHandler(async (req, res) => {

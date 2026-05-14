@@ -33,7 +33,7 @@ const getNotes = asyncHandler(async (req, res) => {
 
 const createNote = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const { content } = req.body;
+  const { title, content } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(projectId)) {
     throw new ApiError(400, "invalid projectId");
@@ -47,6 +47,7 @@ const createNote = asyncHandler(async (req, res) => {
   const note = await Note.create({
     project: new mongoose.Types.ObjectId(projectId),
     createdBy: new mongoose.Types.ObjectId(req.user._id),
+    title,
     content: content,
   });
 
@@ -57,7 +58,7 @@ const createNote = asyncHandler(async (req, res) => {
 
 const updateNote = asyncHandler(async (req, res) => {
   const { noteId } = req.params;
-  const { content } = req.body;
+  const { title, content } = req.body;
   if (!mongoose.Types.ObjectId.isValid(noteId)) {
     throw new ApiError(400, "invalid noteId");
   }
@@ -74,7 +75,8 @@ const updateNote = asyncHandler(async (req, res) => {
   const newNote = await Note.findByIdAndUpdate(
     noteId,
     {
-      content: content,
+      ...(title !== undefined ? { title } : {}),
+      ...(content !== undefined ? { content } : {}),
     },
     {
       new: true,
@@ -132,7 +134,8 @@ const getNoteById = asyncHandler(async (req, res) => {
             $project: {
               username: 1,
               avatar: 1,
-              firstName: 1,
+              fullName: 1,
+              email: 1,
               _id: 1,
             },
           },

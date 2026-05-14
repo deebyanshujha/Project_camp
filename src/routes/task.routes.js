@@ -47,8 +47,6 @@ router
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
-    createTaskValidator(),
-    validate,
     updateTask,
   )
   .delete(
@@ -74,6 +72,25 @@ router
 
 router
   .route("/:projectId/t/:taskId/subtasks/:subTaskId")
+  .put(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    createSubTaskValidator(),
+    validate,
+    updateSubTask,
+  )
+  .delete(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    deleteSubTask,
+  );
+
+router
+  .route("/:projectId/st/:subTaskId")
   .put(
     validateProjectPermission([
       UserRolesEnum.ADMIN,
