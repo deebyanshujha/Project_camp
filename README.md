@@ -8,7 +8,7 @@ A full-stack collaborative project management application designed for beginners
 <!-- ![Dashboard](/path/to/screenshot1.png) -->
 <!-- ![Project View](/path/to/screenshot2.png) -->
 <div align="center">
-  <img src="D:\PMP\public\images\image.png" alt="Project Camp Screenshot" width="800"/>
+  <img src="./public/images/image.png" alt="Project Camp Screenshot" width="800"/>
 </div>
 
 ## 🚀 Features
