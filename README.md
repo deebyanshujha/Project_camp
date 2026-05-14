@@ -2,6 +2,15 @@
 
 A full-stack collaborative project management application designed for beginners and teams. Project Camp enables users to organize projects, manage tasks with subtasks, maintain project notes, and handle user authentication with role-based access control.
 
+## 📸 Screenshots
+
+<!-- Add your website screenshots here! Example format below: -->
+<!-- ![Dashboard](/path/to/screenshot1.png) -->
+<!-- ![Project View](/path/to/screenshot2.png) -->
+<div align="center">
+  <img src="D:\PMP\public\images\image.png" alt="Project Camp Screenshot" width="800"/>
+</div>
+
 ## 🚀 Features
 
 ### User Authentication & Authorization
