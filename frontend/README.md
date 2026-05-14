@@ -1,15 +1,6 @@
-# ProjectCamp Frontend - Modern & Sketchy Design
+# ProjectCamp Frontend
 
 ## Project Overview
-
-ProjectCamp Frontend is a modern, sketch-style React application for project management. It provides a user-friendly interface for managing projects, tasks, subtasks, and team collaboration.
-
-## 🎨 Design Philosophy
-
-- **Modern**: Clean, minimalist design using Tailwind CSS
-- **Sketchy**: Hand-drawn aesthetic with custom border styles and shadows
-- **Responsive**: Mobile-first approach, works on all devices
-- **Intuitive**: Easy-to-use interface following best practices
 
 ## 📁 Project Structure
 
@@ -55,7 +46,7 @@ frontend/
 └── .env.example         # Environment variables template
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
